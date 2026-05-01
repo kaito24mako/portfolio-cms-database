@@ -6,15 +6,16 @@ module.exports = {
     const users = await User.findAll();
     return res.json(users);
   },
+
   async getUser(req, res) {
     const id = parseInt(req.params.id);
-    const userIndex = await User.findByPk(id);
+    const user = await User.findByPk(id);
 
-    if (!userIndex) {
+    if (!user) {
       return res.status(404).send("User not found");
     }
 
-    res.send(userIndex);
+    res.send(user);
   },
 
   // * POST
@@ -40,7 +41,10 @@ module.exports = {
     // req.body is the JSON object of the user data that the client sends
     const user = await User.create(req.body);
 
-    res.json(user);
+    res.send({
+      message: `User ${user.username} created successfully`,
+      user: user,
+    });
   },
 
   // * PUT
@@ -70,15 +74,13 @@ module.exports = {
   // * DELETE
   async deleteUser(req, res) {
     const id = parseInt(req.params.id);
-    const userIndex = await User.findByPk(id);
+    const user = await User.findByPk(id);
 
-    if (userIndex) {
-      await userIndex.destroy();
-      return res.send("User successfuly deleted");
-    }
-
-    if (!userIndex) {
+    if (!user) {
       return res.status(404).send("User not found");
     }
+
+    await user.destroy();
+    res.send(`User ${user.username} successfuly deleted`);
   },
 };
