@@ -4,7 +4,7 @@ const express = require("express");
 
 // Module imports //
 const sequelize = require("./utils/connection");
-const dashboard = require("./routes/dashboard");
+const users = require("./routes/users");
 
 // Create Express app isntance //
 const app = express();
@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 // Routes //
-app.use("/dashboard", dashboard);
+app.use("/users", users);
 
 // Creates a file of the database //
 sequelize.sync().then(() => {
