@@ -8,6 +8,7 @@ module.exports = {
   },
 
   async getUser(req, res) {
+    // req.params.id is the url's :id
     const id = parseInt(req.params.id);
     const user = await User.findByPk(id);
 
@@ -81,6 +82,6 @@ module.exports = {
     }
 
     await user.destroy();
-    res.send(`User ${user.username} successfuly deleted`);
+    res.send(`User ${user.username} deleted successfully`);
   },
 };
