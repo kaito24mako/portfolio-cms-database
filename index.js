@@ -6,11 +6,15 @@ const express = require("express");
 const sequelize = require("./utils/connection");
 const users = require("./routes/users");
 const projects = require("./routes/projects");
+const auth = require("./middleware/auth");
+const logger = require("./middleware/logger");
 
 // Create Express app isntance
 const app = express();
 
 // Middleware
+app.use(auth);
+app.use(logger);
 app.use(express.json());
 
 // Routes
