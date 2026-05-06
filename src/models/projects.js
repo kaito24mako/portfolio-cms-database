@@ -2,32 +2,38 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/connection");
 
 const Project = sequelize.define("Project", {
-  // ? how to create foreign key of userId
-  // attributes of the fields
   title: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
   description: {
     type: DataTypes.STRING,
   },
   siteUrl: {
     type: DataTypes.STRING,
+    validate: {
+      isUrl: true,
+    },
   },
   githubUrl: {
     type: DataTypes.STRING,
+    validate: {
+      isUrl: true,
+    },
   },
-  // ? should these be in 'status' instead
-
-  // ? use DataTypes.ENUM - for putting statuses in an array
-  published: {
-    type: DataTypes.BOOLEAN,
+  status: {
+    type: DataTypes.ENUM,
+    values: ["published", "draft", "archived"],
   },
-  draft: {
-    type: DataTypes.BOOLEAN,
-  },
-  archived: {
-    type: DataTypes.BOOLEAN,
-  },
+  // published: {
+  //   type: DataTypes.BOOLEAN,
+  // },
+  // draft: {
+  //   type: DataTypes.BOOLEAN,
+  // },
+  // archived: {
+  //   type: DataTypes.BOOLEAN,
+  // },
   updatedAt: {
     type: DataTypes.DATE,
     // OR DATEONLY
@@ -41,4 +47,4 @@ const Project = sequelize.define("Project", {
   },
 });
 
-module.exports = { Project };
+module.exports.Project = Project;

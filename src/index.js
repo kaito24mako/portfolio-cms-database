@@ -3,40 +3,41 @@ require("dotenv").config();
 const express = require("express");
 
 // Module imports
-const sequelize = require("./utils/connection");
+//! delete
+// const sequelize = require("./utils/connection");
+const authSyncDb = require("./utils/authSyncDb");
+
 const users = require("./routes/users");
 const projects = require("./routes/projects");
 const auth = require("./middleware/auth");
 const logger = require("./middleware/logger");
 
-// Create Express app isntance
+// Create Express app instance
 const app = express();
+
+//! load .env
+process.loadEnvFile();
 
 // Middleware
 app.use(auth);
 app.use(logger);
 app.use(express.json());
 
+//! Middleware:
+// parse incoming form data to make it available in req.body
+app.use(express.urlencoded({ extended: true }));
+
 // Routes
 app.use("/users", users);
 app.use("/projects", projects);
 
-// Creates a file of the database
-async function connect() {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established");
+//! call authSyncDb
+authSyncDb();
 
-    await sequelize.sync();
-    console.log("Database and tables created");
-  } catch (err) {
-    console.error("Unable to connect to the database", err);
-  }
-}
-connect();
+//! port
+const port = process.env.PORT || 4002;
 
-// Port
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
   console.log(
     `CMS API server is now running on http://localhost:${process.env.PORT}`,
   );
