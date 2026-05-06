@@ -9,8 +9,8 @@ module.exports = {
 
   async getUser(req, res) {
     // req.params.id is the url's :id
-    const id = parseInt(req.params.id);
-    const user = await User.findByPk(id);
+    const username = req.params.username;
+    const user = await User.findOne({ where: { username } });
 
     if (!user) {
       return res.status(404).send("User not found");
@@ -50,8 +50,8 @@ module.exports = {
 
   // * PUT
   async putUser(req, res) {
-    const id = parseInt(req.params.id);
-    const user = await User.findByPk(id);
+    const username = req.params.username;
+    const user = await User.findOne({ where: { username } });
 
     if (!user) {
       return res.status(404).send("User not found");
@@ -74,8 +74,8 @@ module.exports = {
 
   // * DELETE
   async deleteUser(req, res) {
-    const id = parseInt(req.params.id);
-    const user = await User.findByPk(id);
+    const username = req.params.username;
+    const user = await User.findOne({ where: { username } });
 
     if (!user) {
       return res.status(404).send("User not found");

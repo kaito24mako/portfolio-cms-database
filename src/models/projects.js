@@ -3,6 +3,7 @@ const sequelize = require("../utils/connection");
 
 const Project = sequelize.define("Project", {
   // ? how to create foreign key of userId
+  // attributes of the fields
   title: {
     type: DataTypes.STRING,
   },
@@ -16,6 +17,8 @@ const Project = sequelize.define("Project", {
     type: DataTypes.STRING,
   },
   // ? should these be in 'status' instead
+
+  // ? use DataTypes.ENUM - for putting statuses in an array
   published: {
     type: DataTypes.BOOLEAN,
   },
@@ -27,6 +30,7 @@ const Project = sequelize.define("Project", {
   },
   updatedAt: {
     type: DataTypes.DATE,
+    // OR DATEONLY
     get() {
       const rawValue = this.getDataValue("updatedAt");
       if (!rawValue) return null;
