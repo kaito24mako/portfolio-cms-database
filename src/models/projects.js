@@ -1,10 +1,10 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/connection");
 
-const Project = sequelize.define("Projects", {
+const Project = sequelize.define("Project", {
   // ? how to create foreign key of userId
   title: {
-    type: DataTypes.CHAR,
+    type: DataTypes.STRING,
   },
   description: {
     type: DataTypes.STRING,
@@ -24,6 +24,16 @@ const Project = sequelize.define("Projects", {
   },
   archived: {
     type: DataTypes.BOOLEAN,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    get() {
+      const rawValue = this.getDataValue("updatedAt");
+      if (!rawValue) return null;
+      const date = new Date(rawValue);
+
+      return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()}`;
+    },
   },
 });
 

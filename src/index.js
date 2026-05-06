@@ -22,9 +22,18 @@ app.use("/users", users);
 app.use("/projects", projects);
 
 // Creates a file of the database
-sequelize.sync().then(() => {
-  console.log("Database and tables created");
-});
+async function connect() {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established");
+
+    await sequelize.sync();
+    console.log("Database and tables created");
+  } catch (err) {
+    console.error("Unable to connect to the database", err);
+  }
+}
+connect();
 
 // Port
 app.listen(process.env.PORT, () => {
