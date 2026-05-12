@@ -2,12 +2,18 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/connection");
 
 const Project = sequelize.define("Project", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    unique: true,
+    primaryKey: true,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   siteUrl: {
     type: DataTypes.STRING,
@@ -23,26 +29,20 @@ const Project = sequelize.define("Project", {
   },
   status: {
     type: DataTypes.ENUM,
-    values: ["published", "draft", "archived"],
+    values: ["Published", "Draft", "Archived"],
   },
-  // published: {
-  //   type: DataTypes.BOOLEAN,
-  // },
-  // draft: {
-  //   type: DataTypes.BOOLEAN,
-  // },
-  // archived: {
-  //   type: DataTypes.BOOLEAN,
-  // },
   updatedAt: {
     type: DataTypes.DATE,
-    // OR DATEONLY
     get() {
       const rawValue = this.getDataValue("updatedAt");
       if (!rawValue) return null;
       const date = new Date(rawValue);
 
-      return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()}`;
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     },
   },
 });

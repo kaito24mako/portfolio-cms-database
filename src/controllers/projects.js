@@ -8,7 +8,7 @@ module.exports = {
   },
 
   async getProject(req, res) {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const project = await Project.findByPk(id);
 
     if (!project) {
@@ -30,7 +30,7 @@ module.exports = {
 
   // * PUT
   async putProject(req, res) {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const project = await Project.findByPk(id);
 
     if (!project) {
@@ -55,7 +55,7 @@ module.exports = {
 
   // * DELETE
   async deleteProject(req, res) {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const project = await Project.findByPk(id);
 
     if (!project) {

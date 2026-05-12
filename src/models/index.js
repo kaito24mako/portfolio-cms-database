@@ -9,10 +9,10 @@ Project.hasMany(User, {
   //? connects User's 'projectId' to Project's 'id'
   foreignKey: "projectId",
 
-  // ? if the club instance is deleted, user's 'clubId' becomes null
+  // ? if the project instance is deleted, user's 'projectId' becomes null
   onDelete: "SET NULL",
 
-  // ? if the 'clubId' changes, update user's 'clubId'
+  // ? if the 'projectId' changes, update user's 'projectId'
   onUpdate: "CASCADE",
 });
 

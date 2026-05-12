@@ -60,8 +60,7 @@ const User = sequelize.define("User", {
         args: [6, 20],
         msg: "Password must be between 6 and 20 characters",
       },
-      // at least 1 uppercase, 1 lowercase, 1 number, 1 symbol
-      // is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
+      is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
     },
   },
 });
