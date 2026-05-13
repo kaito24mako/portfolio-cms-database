@@ -5,15 +5,15 @@ const sequelize = require("../utils/connection");
 const { User } = require("./users");
 const { Project } = require("./projects");
 
-// ! comment of what relationships are
+// * 1 User | M Project
 Project.hasMany(User, {
-  //? connects User's 'projectId' to Project's 'id'
+  // connects User's 'projectId' to Project's 'id'
   foreignKey: "projectId",
 
-  // ? if the project instance is deleted, user's 'projectId' becomes null
+  // if the project instance is deleted, user's 'projectId' becomes null
   onDelete: "SET NULL",
 
-  // ? if the 'projectId' changes, update user's 'projectId'
+  // if the 'projectId' changes, update user's 'projectId'
   onUpdate: "CASCADE",
 });
 
@@ -24,4 +24,5 @@ User.belongsTo(Project, {
 module.exports = {
   sequelize,
   User,
+  Project,
 };

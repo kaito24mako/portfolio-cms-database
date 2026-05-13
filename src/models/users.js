@@ -39,7 +39,11 @@ const User = sequelize.define("User", {
     allowNull: false,
     unique: true,
     validate: {
-      len: [3, 30],
+      len: {
+        args: [3, 30],
+        msg: "Username must be between 3 and 30 characters",
+      },
+      isAscii: true,
     },
   },
   email: {
@@ -48,7 +52,10 @@ const User = sequelize.define("User", {
     unique: true,
     validate: {
       isEmail: true,
-      len: [5, 100],
+      len: {
+        args: [5, 255],
+        msg: "Email must be between 5 and 255 characters",
+      },
       isAscii: true,
     },
   },
@@ -57,10 +64,19 @@ const User = sequelize.define("User", {
     allowNull: false,
     validate: {
       len: {
-        args: [6, 20],
-        msg: "Password must be between 6 and 20 characters",
+        args: [6, 30],
+        msg: "Password must be between 6 and 30 characters",
       },
+      isAscii: true,
       is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
+    },
+  },
+  // ! isAdmin is someone who can get access to the database
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    validate: {
+      isIn: [[0, 1, true, false, "true", "false"]],
     },
   },
 });

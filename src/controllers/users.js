@@ -1,5 +1,10 @@
 const { User } = require("../models/users");
 
+function internalError(error, res) {
+  console.log(error);
+  res.status(503).send("Internal Error - try again later");
+}
+
 module.exports = {
   // * GET
   async getAllUsers(req, res) {
@@ -7,8 +12,7 @@ module.exports = {
       const users = await User.findAll();
       res.json(users);
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal Error - try again later");
+      internalError(error, res);
     }
   },
 
@@ -22,14 +26,14 @@ module.exports = {
 
       res.send(user);
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal Error - try again later");
+      internalError(error, res);
     }
   },
 
   // * POST
   async postUser(req, res) {
     try {
+      // ! CAN MOVE THESE INTO MODELS!
       if (!req.body.firstName) {
         return res.status(400).send("First name is required");
       }
@@ -56,8 +60,7 @@ module.exports = {
         user: user,
       });
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal Error - try again later");
+      internalError(error, res);
     }
   },
 
@@ -83,8 +86,7 @@ module.exports = {
         user: user,
       });
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal Error - try again later");
+      internalError(error, res);
     }
   },
 
@@ -99,8 +101,7 @@ module.exports = {
       await user.destroy();
       res.send(`User ${user.username} deleted successfully`);
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal Error - try again later");
+      internalError(error, res);
     }
   },
 };

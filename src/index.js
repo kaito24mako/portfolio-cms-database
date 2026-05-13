@@ -38,7 +38,5 @@ authSyncDb();
 const port = process.env.PORT || 4002;
 
 app.listen(port, () => {
-  console.log(
-    `CMS API server is now running on http://localhost:${process.env.PORT}`,
-  );
+  console.log(`CMS API server is now running on http://localhost:${port}`);
 });
