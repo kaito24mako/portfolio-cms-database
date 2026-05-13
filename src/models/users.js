@@ -9,7 +9,7 @@ const User = sequelize.define("User", {
     primaryKey: true,
   },
   projectId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
       model: "Projects",

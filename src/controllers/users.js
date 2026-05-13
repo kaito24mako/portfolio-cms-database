@@ -13,14 +13,12 @@ module.exports = {
   },
 
   async getUser(req, res) {
+    // req.params.id is the url's :id
+    const username = req.params.username;
     try {
-      // req.params.id is the url's :id
-      const username = req.params.username;
       const user = await User.findOne({ where: { username } });
 
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
+      if (!user) return res.status(404).send("User not found");
 
       res.send(user);
     } catch (error) {
@@ -66,37 +64,43 @@ module.exports = {
   // * PUT
   async putUser(req, res) {
     const username = req.params.username;
-    const user = await User.findOne({ where: { username } });
+    try {
+      const user = await User.findOne({ where: { username } });
 
-    if (!user) {
-      return res.status(404).send("User not found");
+      if (!user) return res.status(404).send("User not found");
+
+      await user.update({
+        // if there's a new firstName from Postman, use it, otherwise use current firstName
+        firstName: req.body.firstName ?? user.firstName,
+        lastName: req.body.lastName ?? user.lastName,
+        username: req.body.username ?? user.username,
+        email: req.body.email ?? user.email,
+        password: req.body.password ?? user.password,
+      });
+
+      res.send({
+        message: `User ${user.username} updated successfully`,
+        user: user,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Error - try again later");
     }
-
-    await user.update({
-      // if there's a new firstName from Postman, use it, otherwise use current firstName
-      firstName: req.body.firstName ?? user.firstName,
-      lastName: req.body.lastName ?? user.lastName,
-      username: req.body.username ?? user.username,
-      email: req.body.email ?? user.email,
-      password: req.body.password ?? user.password,
-    });
-
-    res.send({
-      message: `User ${user.username} updated successfully`,
-      user: user,
-    });
   },
 
   // * DELETE
   async deleteUser(req, res) {
     const username = req.params.username;
-    const user = await User.findOne({ where: { username } });
+    try {
+      const user = await User.findOne({ where: { username } });
 
-    if (!user) {
-      return res.status(404).send("User not found");
+      if (!user) return res.status(404).send("User not found");
+
+      await user.destroy();
+      res.send(`User ${user.username} deleted successfully`);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Error - try again later");
     }
-
-    await user.destroy();
-    res.send(`User ${user.username} deleted successfully`);
   },
 };
