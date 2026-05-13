@@ -3,49 +3,64 @@ const { User } = require("../models/users");
 module.exports = {
   // * GET
   async getAllUsers(req, res) {
-    const users = await User.findAll();
-    return res.json(users);
+    try {
+      const users = await User.findAll();
+      res.json(users);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Error - try again later");
+    }
   },
 
   async getUser(req, res) {
-    // req.params.id is the url's :id
-    const username = req.params.username;
-    const user = await User.findOne({ where: { username } });
+    try {
+      // req.params.id is the url's :id
+      const username = req.params.username;
+      const user = await User.findOne({ where: { username } });
 
-    if (!user) {
-      return res.status(404).send("User not found");
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      res.send(user);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Error - try again later");
     }
-
-    res.send(user);
   },
 
   // * POST
   async postUser(req, res) {
-    if (!req.body.firstName) {
-      return res.status(400).send("First name is required");
-    }
-    if (!req.body.lastName) {
-      return res.status(400).send("Last name is required");
-    }
-    if (!req.body.username || req.body.username.length < 4) {
-      return res
-        .status(400)
-        .send("Username is required and must be at least 4 characters long");
-    }
-    if (!req.body.email) {
-      return res.status(400).send("Email address is required");
-    }
-    if (!req.body.password) {
-      return res.status(400).send("Password is required");
-    }
+    try {
+      if (!req.body.firstName) {
+        return res.status(400).send("First name is required");
+      }
+      if (!req.body.lastName) {
+        return res.status(400).send("Last name is required");
+      }
+      if (!req.body.username || req.body.username.length < 4) {
+        return res
+          .status(400)
+          .send("Username is required and must be at least 4 characters long");
+      }
+      if (!req.body.email) {
+        return res.status(400).send("Email address is required");
+      }
+      if (!req.body.password) {
+        return res.status(400).send("Password is required");
+      }
 
-    // req.body is the JSON object of the user data that the client sends
-    const user = await User.create(req.body);
+      // req.body is the JSON object of the user data that the client sends
+      const user = await User.create(req.body);
 
-    res.send({
-      message: `User ${user.username} created successfully`,
-      user: user,
-    });
+      res.send({
+        message: `User ${user.username} created successfully`,
+        user: user,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Error - try again later");
+    }
   },
 
   // * PUT

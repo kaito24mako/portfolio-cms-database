@@ -5,6 +5,7 @@ const sequelize = require("../utils/connection");
 const { User } = require("./users");
 const { Project } = require("./projects");
 
+// ! comment of what relationships are
 Project.hasMany(User, {
   //? connects User's 'projectId' to Project's 'id'
   foreignKey: "projectId",
