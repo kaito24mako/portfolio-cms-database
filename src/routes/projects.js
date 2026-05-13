@@ -6,7 +6,10 @@ const projectsController = require("../controllers/projects");
 // Call controllers for projects
 router.get("/", projectsController.getAllProjects);
 
-router.get("/:id", projectsController.getProject);
+router.get("/:id", projectsController.getProjectById);
+
+// ! get project by title
+router.get("/title", projectsController.getProjectByTitle);
 
 router.post("/new", projectsController.postProject);
 

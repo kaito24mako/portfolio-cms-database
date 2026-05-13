@@ -1,26 +1,36 @@
 const { User } = require("../models/users");
+const _ = require("lodash");
 
 function internalError(error, res) {
   console.log(error);
+  if (error.errors[0].message)
+    return res.status(409).send(error.errors[0].message);
+
   res.status(503).send("Internal Error - try again later");
 }
 
 module.exports = {
   // * GET
+  // api/users
   async getAllUsers(req, res) {
     try {
-      const users = await User.findAll();
+      // ! add exclusions - same as lodash
+      const users = await User.findAll({
+        attributes: { exclude: ["password", "createdAt", "isAdmin"] },
+      });
       res.json(users);
     } catch (error) {
       internalError(error, res);
     }
   },
 
-  async getUser(req, res) {
-    // req.params.id is the url's :id
-    const username = req.params.username;
+  // api/users/:id
+  async getUserById(req, res) {
     try {
-      const user = await User.findOne({ where: { username } });
+      // ! add exclusions - same as lodash
+      const user = await User.findByPk(req.params.id, {
+        attributes: { exclude: ["password", "createdAt", "isAdmin"] },
+      });
 
       if (!user) return res.status(404).send("User not found");
 
@@ -31,6 +41,7 @@ module.exports = {
   },
 
   // * POST
+  // api/users
   async postUser(req, res) {
     try {
       // ! CAN MOVE THESE INTO MODELS!
@@ -52,12 +63,33 @@ module.exports = {
         return res.status(400).send("Password is required");
       }
 
-      // req.body is the JSON object of the user data that the client sends
-      const user = await User.create(req.body);
+      // ! combines findByPk and Create
+
+      // ? add exclusions!
+      const [user, created] = await User.findOrCreate({
+        where: {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+        },
+      });
+
+      if (!created) return res.status(409).send("This user already exists");
+
+      // ! prevents anything not included from being sent
+      let userData = _.pick(user, [
+        "id",
+        "firstName",
+        "lastName",
+        "username",
+        "email",
+      ]);
 
       res.send({
         message: `User ${user.username} created successfully`,
-        user: user,
+        user: userData,
       });
     } catch (error) {
       internalError(error, res);
@@ -65,21 +97,26 @@ module.exports = {
   },
 
   // * PUT
+  // api/users/:id
   async putUser(req, res) {
-    const username = req.params.username;
     try {
-      const user = await User.findOne({ where: { username } });
+      const user = await User.findByPk(req.params.id);
 
       if (!user) return res.status(404).send("User not found");
 
-      await user.update({
-        // if there's a new firstName from Postman, use it, otherwise use current firstName
-        firstName: req.body.firstName ?? user.firstName,
-        lastName: req.body.lastName ?? user.lastName,
-        username: req.body.username ?? user.username,
-        email: req.body.email ?? user.email,
-        password: req.body.password ?? user.password,
-      });
+      await user.update(
+        {
+          // if there's a new firstName from Postman, use it, otherwise use current firstName
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+        },
+        {
+          attributes: { exclude: ["password", "createdAt", "isAdmin"] },
+        },
+      );
 
       res.send({
         message: `User ${user.username} updated successfully`,
@@ -91,10 +128,10 @@ module.exports = {
   },
 
   // * DELETE
+  // api/users/:id
   async deleteUser(req, res) {
-    const username = req.params.username;
     try {
-      const user = await User.findOne({ where: { username } });
+      const user = await User.findByPk(req.params.id);
 
       if (!user) return res.status(404).send("User not found");
 

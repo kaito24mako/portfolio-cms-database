@@ -1,4 +1,3 @@
-//! Creates a file of the database
 const { sequelize } = require("../models/index");
 
 async function authSyncDb() {

@@ -3,8 +3,6 @@ require("dotenv").config();
 const express = require("express");
 
 // Module imports
-//! delete
-// const sequelize = require("./utils/connection");
 const authSyncDb = require("./utils/authSyncDb");
 
 const users = require("./routes/users");
@@ -15,26 +13,23 @@ const logger = require("./middleware/logger");
 // Create Express app instance
 const app = express();
 
-//! load .env
+// load .env
 process.loadEnvFile();
+
+// Sync to database
+authSyncDb();
 
 // Middleware
 app.use(auth);
 app.use(logger);
 app.use(express.json());
-
-//! Middleware:
-// parse incoming form data to make it available in req.body
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/users", users);
 app.use("/projects", projects);
 
-//! call authSyncDb
-authSyncDb();
-
-//! port
+// Port
 const port = process.env.PORT || 4002;
 
 app.listen(port, () => {
