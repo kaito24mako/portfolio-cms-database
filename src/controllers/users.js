@@ -65,12 +65,14 @@ module.exports = {
       //   return res.status(400).send("Password is required");
       // }
 
+      // ? how to make it username OR email
       const sameUser = await User.findOne({
         where: { username: req.body.username, email: req.body.email },
       });
       if (sameUser)
         return res.status(409).send("This username or email already exists");
 
+      // ? how to used hashedPassword - doesnt work atm
       const user = await User.create(req.body);
 
       // ! Authentication
