@@ -7,7 +7,7 @@ const authSyncDb = require("./utils/authSyncDb");
 
 const users = require("./routes/users");
 const projects = require("./routes/projects");
-const auth = require("./middleware/auth");
+const auth = require("./routes/auth");
 const logger = require("./middleware/logger");
 
 // Create Express app instance
@@ -20,14 +20,15 @@ process.loadEnvFile();
 authSyncDb();
 
 // Middleware
-app.use(auth);
-app.use(logger);
+// app.use(auth);
+// app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/users", users);
 app.use("/projects", projects);
+app.use("/login", auth);
 
 // Port
 const port = process.env.PORT || 4002;

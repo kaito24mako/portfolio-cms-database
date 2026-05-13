@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/connection");
+const jwt = require("jsonwebtoken");
 
 const User = sequelize.define("User", {
   id: {
@@ -68,7 +69,7 @@ const User = sequelize.define("User", {
         msg: "Password must be between 6 and 30 characters",
       },
       isAscii: true,
-      is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
+      // is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
     },
   },
   // ! isAdmin is someone who can get access to the database
@@ -80,5 +81,21 @@ const User = sequelize.define("User", {
     },
   },
 });
+
+// creates a web token and attaches user details to it
+User.prototype.generateAuthToken = function () {
+  return jwt.sign(
+    {
+      id: this.id,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      username: this.username,
+      email: this.email,
+      password: this.password,
+      isAdmin: this.isAdmin,
+    },
+    process.env.API_PRIVATE_KEY,
+  );
+};
 
 module.exports.User = User;
