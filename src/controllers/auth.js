@@ -6,8 +6,8 @@ async function login(req, res) {
   try {
     const user = await User.findOne({
       where: {
-        firstName: req.body?.firstName,
-        lastName: req.body?.lastName,
+        // firstName: req.body?.firstName,
+        // lastName: req.body?.lastName,
         username: req.body?.username,
         email: req.body?.email,
         password: req.body?.password,
@@ -20,21 +20,23 @@ async function login(req, res) {
     }
 
     // compares the password in the request vs the user's password data
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      user.password,
-    );
+    // const validPassword = await bcrypt.compare(
+    //   req.body.password,
+    //   user.password,
+    // );
+    const validPassword = user.password;
 
-    if (!validPassword) {
+    if (validPassword !== req.body.password) {
       console.log("Invalid password");
       return res.status(400).send("Invalid login details");
     }
 
+    // ! use lodash to exclude password and isAdmin
     const token = user.generateAuthToken();
 
     res.send(token);
   } catch (error) {
-    console.log("Internal error");
+    console.log("Internal error:", error);
     return res.status(503).send("Internal error");
   }
 }

@@ -72,6 +72,15 @@ module.exports = {
       if (sameUser)
         return res.status(409).send("This username or email already exists");
 
+      // ! how to display error messages!
+
+      // if res.status === 409 => toast('This username')
+
+      //   switch (res.status) {
+      //   case '409'
+      //   return 'This username or email already exists'
+      // }
+
       // ? how to used hashedPassword - doesnt work atm
       const user = await User.create(req.body);
 
@@ -114,6 +123,9 @@ module.exports = {
         username: req.body.username ?? user.username,
         email: req.body.email ?? user.email,
       });
+
+      // reload
+      // refreshes already found user
 
       res.send({
         message: `User ${user.username} updated successfully`,

@@ -12,7 +12,10 @@ module.exports = {
     try {
       const projects = await Project.findAll({
         order: [["updatedAt", "DESC"]],
+        attributes: { exclude: ["createdAt"] },
       });
+
+      //! can incorporate js logic into controllers
 
       // const projects1 = await Project.findAll({
       //   // ! for excluding certain columns
@@ -63,7 +66,6 @@ module.exports = {
   // api/projects/new
   async postProject(req, res) {
     try {
-      // ! to prevent two projects with the same title from being created
       const sameProject = await Project.findOne({
         where: { title: req.body.title },
       });
@@ -91,14 +93,15 @@ module.exports = {
       if (!project) return res.status(404).send("Project not found");
 
       await project.update({
-        title: req.body?.title,
-        description: req.body?.description,
-        siteUrl: req.body?.siteUrl,
-        githubUrl: req.body?.githubUrl,
-        published: req.body?.published,
-        draft: req.body?.draft,
-        archived: req.body?.archived,
+        title: req.body.title ?? project.title,
+        description: req.body.description ?? project.description,
+        siteUrl: req.body.siteUrl ?? project.siteUrl,
+        githubUrl: req.body.githubUrl ?? project.githubUrl,
+        status: req.body.status ?? project.status,
       });
+
+      // ! where exclude DOESNT WORK for put
+      // ! use lodash
 
       res.send({
         message: `Project ${project.title} updated successfully`,
