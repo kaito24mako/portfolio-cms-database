@@ -3,6 +3,10 @@ const { User } = require("../models/users");
 
 // if password matches the web token's password, create auth token for user to provide access
 async function login(req, res) {
+  if (!req.body.username && !req.body.email && !req.body.password) {
+    return res.status(400).send("Fill in all fields");
+  }
+
   try {
     const user = await User.findOne({
       where: {
@@ -11,6 +15,7 @@ async function login(req, res) {
         username: req.body?.username,
         email: req.body?.email,
         password: req.body?.password,
+        isAdmin: req.body?.isAdmin,
       },
     });
 
@@ -24,14 +29,15 @@ async function login(req, res) {
     //   req.body.password,
     //   user.password,
     // );
-    const validPassword = user.password;
 
-    if (validPassword !== req.body.password) {
+    if (user.password !== req.body.password) {
       console.log("Invalid password");
       return res.status(400).send("Invalid login details");
     }
 
     // ! use lodash to exclude password and isAdmin
+
+    // assign token with details of user
     const token = user.generateAuthToken();
 
     res.send(token);

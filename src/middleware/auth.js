@@ -11,9 +11,11 @@ function auth(req, res, next) {
 
   try {
     // decode the token
+    // if signature doesnt match the token, send 400 status
     const decoded = jwt.verify(token, process.env.API_PRIVATE_KEY);
 
-    // attach decoded token to the request under 'user'
+    // attach decoded token into req.user
+    // so that it can be used by the next middleware or controller
     req.user = decoded;
 
     // calls next middleware

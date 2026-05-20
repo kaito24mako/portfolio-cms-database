@@ -8,15 +8,14 @@ const usersController = require("../controllers/users");
 // ! Authenticate methods
 
 // Call controllers for users
-router.get("/", usersController.getAllUsers);
+router.get("/", [auth, admin], usersController.getAllUsers);
 
-
-router.get("/:id", usersController.getUserById);
+router.get("/:id", [auth, admin], usersController.getUserById);
 
 router.post("/", usersController.postUser);
 
-router.put("/:id", [auth, admin], usersController.putUser);
+router.put("/:id", auth, usersController.putUser);
 
-router.delete("/:id", [auth, admin], usersController.deleteUser);
+router.delete("/:id", auth, usersController.deleteUser);
 
 module.exports = router;

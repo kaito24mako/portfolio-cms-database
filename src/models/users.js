@@ -72,7 +72,6 @@ const User = sequelize.define("User", {
       // is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
     },
   },
-  // ! isAdmin is someone who can get access to the database
   isAdmin: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

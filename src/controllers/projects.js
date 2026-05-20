@@ -1,5 +1,10 @@
 const { Project } = require("../models/projects");
 
+// ! debug
+const debugError = require("debug")("app:projectsLog:error");
+const debugWrite = require("debug")("app:projectsLog:Write");
+const debugRead = require("debug")("app:projectsLog:Read");
+
 function internalError(error, res) {
   console.log(error);
   res.status(503).send("Internal Error - try again later");
@@ -11,21 +16,16 @@ module.exports = {
   async getAllProjects(req, res) {
     try {
       const projects = await Project.findAll({
-        order: [["updatedAt", "DESC"]],
         attributes: { exclude: ["createdAt"] },
+        order: [["updatedAt", "DESC"]],
       });
 
-      //! can incorporate js logic into controllers
+      if (!projects) {
+        debugError("Projects not found");
+        return res.status(404).send("Projects not found");
+      }
 
-      // const projects1 = await Project.findAll({
-      //   // ! for excluding certain columns
-      //   attributes: { exclude: ["id", "createdAt"] },
-      //   attributes: ["title", "description"],
-      //   // ! for finding projects with a certain value of a column
-      //   where: { userId: 1, status: "Active" },
-      // });
-
-      if (!projects) return res.status(404).send("Projects not found");
+      debugRead("Projects found");
 
       res.json(projects);
     } catch (error) {
@@ -36,25 +36,11 @@ module.exports = {
   // api/projects/:id
   async getProjectById(req, res) {
     try {
-      const project = await Project.findByPk(req.params.id);
-
-      if (!project) return res.status(404).send("Project not found");
-
-      res.json(project);
-    } catch (error) {
-      internalError(error, res);
-    }
-  },
-
-  // api/projects/:id
-  // ! get project by title instead of id
-  async getProjectByTitle(req, res) {
-    try {
-      const project = await Project.findOne({
-        where: { title: req.body.title },
+      const project = await Project.findByPk(req.params.id, {
+        attributes: { exclude: ["createdAt"] },
       });
 
-      if (!project) return res.status(404).send("Project title does not exist");
+      if (!project) return res.status(404).send("Project not found");
 
       res.json(project);
     } catch (error) {
@@ -70,10 +56,14 @@ module.exports = {
         where: { title: req.body.title },
       });
 
-      if (sameProject)
+      if (sameProject) {
+        debugError("This project already exists");
         return res.status(409).send("This project already exists");
+      }
 
-      const project = await Project.create(req.body);
+      const project = await Project.create(req.body, {
+        attributes: { exclude: ["createdAt"] },
+      });
 
       res.send({
         message: `Project ${project.title} created successfully`,
@@ -83,6 +73,8 @@ module.exports = {
       internalError(error, res);
     }
   },
+
+  // ! create an instance of Project for an existing User
 
   // * PUT
   // api/projects/edit/:id

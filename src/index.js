@@ -2,6 +2,9 @@
 require("dotenv").config();
 const express = require("express");
 
+// debug module
+const debugStartup = require("debug")("app:");
+
 // Module imports
 const authSyncDb = require("./utils/authSyncDb");
 
@@ -25,6 +28,8 @@ authSyncDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+debugStartup("Middleware enabled");
+
 // Routes
 app.use("/users", users);
 app.use("/projects", projects);
@@ -34,5 +39,5 @@ app.use("/login", auth);
 const port = process.env.PORT || 4002;
 
 app.listen(port, () => {
-  console.log(`CMS API server is now running on http://localhost:${port}`);
+  debugStartup(`CMS API server is now running on http://localhost:${port}`);
 });

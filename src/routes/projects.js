@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
 const projectsController = require("../controllers/projects");
 
@@ -8,13 +10,12 @@ router.get("/", projectsController.getAllProjects);
 
 router.get("/:id", projectsController.getProjectById);
 
-// ! get project by title
-router.get("/title", projectsController.getProjectByTitle);
-
 router.post("/new", projectsController.postProject);
 
-router.put("/edit/:id", projectsController.putProject);
+// ! [auth] for editing and deleting projects?
 
-router.delete("/edit/:id", projectsController.deleteProject);
+router.put("/edit/:id", [auth], projectsController.putProject);
+
+router.delete("/edit/:id", [auth], projectsController.deleteProject);
 
 module.exports = router;
