@@ -25,25 +25,34 @@ async function login(req, res, next) {
       where: {
         username: req.body?.username,
         email: req.body?.email,
-        password: req.body?.password,
       },
     });
 
     if (!user) {
-      debugError("Invalid login details");
+      debugError("Invalid username or email details");
       return next(ApiError.badRequest("Invalid login details"));
     }
 
-    // compares the password in the request vs the user's password data
+    if (req.body.password !== user.password) {
+      debugError("Invalid password");
+      return next(ApiError.badRequest("Invalid login details"));
+    }
+
+    //? compares the password in the request vs the user's password data
     // const validPassword = await bcrypt.compare(
     //   req.body.password,
     //   user.password,
     // );
 
-    if (user.password !== req.body.password) {
-      debugError("Invalid login details");
-      return next(ApiError.badRequest("Invalid login details"));
-    }
+    // if (!validPassword) {
+    //   debugError("Invalid password");
+    //   return next(ApiError.badRequest("Invalid login details"));
+    // }
+
+    // if (user.password !== req.body.password) {
+    //   debugError("Invalid login details");
+    //   return next(ApiError.badRequest("Invalid login details"));
+    // }
 
     // assign token with details of user
     const token = user.generateAuthToken();

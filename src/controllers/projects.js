@@ -65,7 +65,7 @@ module.exports = {
   async postProject(req, res, next) {
     try {
       const sameProject = await Project.findOne({
-        where: { title: req.body.title },
+        where: { title: req.body.title, userId: req.user.id },
       });
 
       if (sameProject) {
@@ -97,13 +97,14 @@ module.exports = {
     }
   },
 
-  // ! create an instance of Project for an existing User
-
   // * PUT
   // api/projects/edit/:id
   async putProject(req, res, next) {
     try {
-      const project = await Project.findByPk(req.params.id);
+      const project = await Project.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        attributes: { exclude: ["createdAt"] },
+      });
 
       if (!project) {
         debugError("Project was not found");
@@ -135,9 +136,12 @@ module.exports = {
 
   // * DELETE
   // api/projects/edit/:id
-  async deleteProject(req, res) {
+  async deleteProject(req, res, next) {
     try {
-      const project = await Project.findByPk(req.params.id);
+      const project = await Project.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        attributes: { exclude: ["createdAt"] },
+      });
 
       if (!project) {
         debugError("Project was not found");

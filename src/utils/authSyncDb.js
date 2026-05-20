@@ -5,7 +5,7 @@ async function authSyncDb() {
     await sequelize.authenticate();
     console.log("Connection has been established");
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Database and tables created");
   } catch (err) {
     console.error("Unable to connect to the database", err);

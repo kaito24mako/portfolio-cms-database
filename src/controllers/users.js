@@ -59,10 +59,6 @@ module.exports = {
   // api/users
   async postUser(req, res, next) {
     try {
-      // Authentication - to salt and hash (encrypt) the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
       if (!req.body.firstName) {
         return next(ApiError.badRequest("First Name is required"));
       }
@@ -83,6 +79,10 @@ module.exports = {
         return next(ApiError.badRequest("Password is required"));
       }
 
+      // Authentication - to salt and hash (encrypt) the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
       // ? how to make it username OR email
       const sameUser = await User.findOne({
         where: { username: req.body.username, email: req.body.email },
@@ -90,25 +90,44 @@ module.exports = {
 
       if (sameUser) {
         debugError("A user with the same username or email already exists");
-        return next(ApiError.conflict("This user already exists"));
+        return next(
+          ApiError.conflict(
+            "A user with the same username or email already exists",
+          ),
+        );
       }
 
       const user = await User.create(req.body);
+
+      // const user = await User.create({
+      //   firstName: req.body.firstName,
+      //   lastName: req.body.lastName,
+      //   username: req.body.username,
+      //   email: req.body.email,
+      //   password: req.body.password,
+      // });
 
       // Authentication
       const token = user.generateAuthToken();
       res.header("x-auth-token", token);
 
       // lodash prevents anything not included from being sent
-      let userData = _.omit(user, ["password", "createdAt", "isAdmin"]);
+      let userData = _.pick(user, [
+        "id",
+        "firstName",
+        "lastName",
+        "username",
+        "email",
+      ]);
 
       // attach token to data
-      userData.token;
+      userData.token = token;
 
       res.send({
         message: `User ${user.username} created successfully`,
         user: userData,
       });
+      debugWrite("Success creating the user");
     } catch (error) {
       return next(
         ApiError.internal("Could not create the user...try again later", error),
@@ -138,6 +157,7 @@ module.exports = {
         message: `User ${user.username} updated successfully`,
         user: user,
       });
+      debugWrite("Success updating the user");
     } catch (error) {
       return next(
         ApiError.internal("Could not update the user...try again later", error),
@@ -159,7 +179,7 @@ module.exports = {
       await user.destroy();
 
       res.send(`User ${user.username} deleted successfully`);
-      debugRead("The user was successfully deleted");
+      debugWrite("The user was successfully deleted");
     } catch (error) {
       return next(
         ApiError.internal("Could not delete the user...try again later", error),
