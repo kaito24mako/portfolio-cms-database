@@ -1,27 +1,37 @@
 const bcrypt = require("bcrypt");
+const _ = require("lodash");
+
+const debugError = require("debug")("app:projectsLog:error");
+const debugWrite = require("debug")("app:projectsLog:Write");
+const debugRead = require("debug")("app:projectsLog:Read");
+
+const ApiError = require("../utils/ApiError");
+
 const { User } = require("../models/users");
 
 // if password matches the web token's password, create auth token for user to provide access
-async function login(req, res) {
-  if (!req.body.username && !req.body.email && !req.body.password) {
-    return res.status(400).send("Fill in all fields");
-  }
-
+async function login(req, res, next) {
   try {
+    if (!req.body.username || !req.body.email || !req.body.password) {
+      debugError("Username, email and/or password were not filled in");
+      return next(
+        ApiError.badRequest(
+          "Username, email, and/or password were not filled in",
+        ),
+      );
+    }
+
     const user = await User.findOne({
       where: {
-        // firstName: req.body?.firstName,
-        // lastName: req.body?.lastName,
         username: req.body?.username,
         email: req.body?.email,
         password: req.body?.password,
-        isAdmin: req.body?.isAdmin,
       },
     });
 
     if (!user) {
-      console.log("Invalid email or username");
-      return res.status(400).send("Invalid login details");
+      debugError("Invalid login details");
+      return next(ApiError.badRequest("Invalid login details"));
     }
 
     // compares the password in the request vs the user's password data
@@ -31,19 +41,25 @@ async function login(req, res) {
     // );
 
     if (user.password !== req.body.password) {
-      console.log("Invalid password");
-      return res.status(400).send("Invalid login details");
+      debugError("Invalid login details");
+      return next(ApiError.badRequest("Invalid login details"));
     }
-
-    // ! use lodash to exclude password and isAdmin
 
     // assign token with details of user
     const token = user.generateAuthToken();
 
+    // ? use lodash to exclude password and isAdmin...but how?
+    let loginData = _.omit(user, ["password", "isAdmin"]);
+
     res.send(token);
+    debugWrite("Successful login");
   } catch (error) {
-    console.log("Internal error:", error);
-    return res.status(503).send("Internal error");
+    debugError("Something went wrong with logging in...", error);
+    return next(
+      ApiError.internal(
+        "Something went wrong with logging in...try again later",
+      ),
+    );
   }
 }
 

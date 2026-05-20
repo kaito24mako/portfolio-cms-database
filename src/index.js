@@ -4,7 +4,7 @@ const express = require("express");
 
 // api handler
 const ApiError = require("./utils/ApiError");
-const apiErrorHandler = require("./middleware/apiErrorHandler");
+const apiErrorHandler = require("./middleware/errorHandler");
 
 // debug module
 const debugStartup = require("debug")("app:");

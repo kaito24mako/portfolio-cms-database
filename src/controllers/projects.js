@@ -6,6 +6,8 @@ const debugRead = require("debug")("app:projectsLog:Read");
 
 const ApiError = require("../utils/ApiError");
 
+const _ = require("lodash");
+
 module.exports = {
   // * GET
   // api/projects
@@ -18,16 +20,16 @@ module.exports = {
 
       if (!projects || projects.length == 0) {
         debugError("Projects not found");
-        return next(ApiError.notFound("No Projects found"));
+        return next(ApiError.notFound("No projects found"));
       }
 
       debugRead("All Projects found");
       res.json(projects);
-      debugWrite("Success getting all Projects");
+      debugWrite("Success getting all projects");
     } catch (error) {
       return next(
         ApiError.internal(
-          "Could not get all Projects...try again later",
+          "Could not get all projects...try again later",
           error,
         ),
       );
@@ -43,12 +45,12 @@ module.exports = {
 
       if (!project) {
         debugError("Project not found by ID");
-        return next(ApiError.notFound("Project not found"));
+        return next(ApiError.notFound("Project not found by ID"));
       }
 
       debugRead("Project found by ID");
       res.json(project);
-      debugWrite("Success getting Project by ID");
+      debugWrite("Success getting project by ID");
     } catch (error) {
       return next(
         ApiError.internal("Could not get the Project...try again later", error),
@@ -65,8 +67,8 @@ module.exports = {
       });
 
       if (sameProject) {
-        debugError("A Project with the same title already exists");
-        return next(ApiError.conflict("This Project already exists"));
+        debugError("A project with the same title already exists");
+        return next(ApiError.conflict("This project already exists"));
       }
 
       const project = await Project.create(req.body, {
@@ -81,7 +83,7 @@ module.exports = {
     } catch (error) {
       return next(
         ApiError.internal(
-          "Could not create the Project...try again later",
+          "Could not create the project...try again later",
           error,
         ),
       );
@@ -109,9 +111,6 @@ module.exports = {
         status: req.body.status ?? project.status,
       });
 
-      // ! where exclude DOESNT WORK for put
-      // ! use lodash
-
       res.send({
         message: `Project ${project.title} updated successfully`,
         project: project,
@@ -120,7 +119,7 @@ module.exports = {
     } catch (error) {
       return next(
         ApiError.internal(
-          "Could not update the Project...try again later",
+          "Could not update the project...try again later",
           error,
         ),
       );
@@ -140,12 +139,12 @@ module.exports = {
 
       await project.destroy();
 
-      debugWrite("The Project was successfully deleted");
+      debugWrite("The project was successfully deleted");
       res.send(`Project ${project.title} deleted successfully`);
     } catch (error) {
       return next(
         ApiError.internal(
-          "Could not delete the Project...try again later",
+          "Could not delete the project...try again later",
           error,
         ),
       );
