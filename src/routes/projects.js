@@ -14,8 +14,8 @@ router.post("/new", projectsController.postProject);
 
 // ! [auth] for editing and deleting projects?
 
-router.put("/edit/:id", [auth], projectsController.putProject);
+router.put("/edit/:id", projectsController.putProject);
 
-router.delete("/edit/:id", [auth], projectsController.deleteProject);
+router.delete("/edit/:id", projectsController.deleteProject);
 
 module.exports = router;

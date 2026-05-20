@@ -2,11 +2,6 @@ const { User } = require("../models/users");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
-function internalError(error, res) {
-  console.log(error);
-  res.status(503).send("Internal Error - try again later");
-}
-
 module.exports = {
   // * GET
   // api/users
@@ -81,7 +76,6 @@ module.exports = {
       //   return 'This username or email already exists'
       // }
 
-      // ? how to used hashedPassword - doesnt work atm
       const user = await User.create(req.body);
 
       // ! Authentication

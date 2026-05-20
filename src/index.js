@@ -2,6 +2,10 @@
 require("dotenv").config();
 const express = require("express");
 
+// api handler
+const ApiError = require("./utils/ApiError");
+const apiErrorHandler = require("./middleware/apiErrorHandler");
+
 // debug module
 const debugStartup = require("debug")("app:");
 
@@ -34,6 +38,12 @@ debugStartup("Middleware enabled");
 app.use("/users", users);
 app.use("/projects", projects);
 app.use("/login", auth);
+
+// error for if a route isnt found
+app.use((req, res, next) => {
+  next(ApiError.notFound("Route not found"));
+});
+app.use(apiErrorHandler);
 
 // Port
 const port = process.env.PORT || 4002;
