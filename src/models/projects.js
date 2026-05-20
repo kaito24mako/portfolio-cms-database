@@ -2,6 +2,16 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/connection");
 
 const Project = sequelize.define("Project", {
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "Users",
+      key: "id",
+    },
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,

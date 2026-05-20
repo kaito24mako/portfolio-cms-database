@@ -14,11 +14,12 @@ module.exports = {
   async getAllProjects(req, res, next) {
     try {
       const projects = await Project.findAll({
+        where: { userId: req.user.id },
         attributes: { exclude: ["createdAt"] },
         order: [["updatedAt", "DESC"]],
       });
 
-      if (!projects || projects.length == 0) {
+      if (!projects) {
         debugError("Projects not found");
         return next(ApiError.notFound("No projects found"));
       }
@@ -39,7 +40,8 @@ module.exports = {
   // api/projects/:id
   async getProjectById(req, res, next) {
     try {
-      const project = await Project.findByPk(req.params.id, {
+      const project = await Project.findOne({
+        where: { id: req.params.id, userId: req.user.id },
         attributes: { exclude: ["createdAt"] },
       });
 
@@ -71,8 +73,13 @@ module.exports = {
         return next(ApiError.conflict("This project already exists"));
       }
 
-      const project = await Project.create(req.body, {
-        attributes: { exclude: ["createdAt"] },
+      const project = await Project.create({
+        title: req.body.title,
+        description: req.body.description,
+        siteUrl: req.body.siteUrl,
+        githubUrl: req.body.githubUrl,
+        status: req.body.status,
+        userId: req.user.id,
       });
 
       res.send({

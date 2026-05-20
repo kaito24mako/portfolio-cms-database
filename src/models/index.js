@@ -1,24 +1,21 @@
-//! foreign key setup
-// to put all things together so that everything is synced together
-// passes to authSyncDb, which syncs all data and tables together
 const sequelize = require("../utils/connection");
 const { User } = require("./users");
 const { Project } = require("./projects");
 
 // * 1 User | M Project
-Project.hasMany(User, {
+User.hasMany(Project, {
   // connects User's 'projectId' to Project's 'id'
-  foreignKey: "projectId",
+  foreignKey: "userId",
 
   // if the project instance is deleted, user's 'projectId' becomes null
-  onDelete: "SET NULL",
+  onDelete: "CASCADE",
 
   // if the 'projectId' changes, update user's 'projectId'
   onUpdate: "CASCADE",
 });
 
-User.belongsTo(Project, {
-  foreignKey: "projectId",
+Project.belongsTo(User, {
+  foreignKey: "userId",
 });
 
 module.exports = {

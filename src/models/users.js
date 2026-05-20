@@ -9,16 +9,6 @@ const User = sequelize.define("User", {
     unique: true,
     primaryKey: true,
   },
-  projectId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: "Projects",
-      key: "id",
-    },
-    onDelete: "SET NULL",
-    onUpdate: "CASCADE",
-  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,

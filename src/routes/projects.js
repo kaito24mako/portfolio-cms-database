@@ -6,16 +6,14 @@ const admin = require("../middleware/admin");
 const projectsController = require("../controllers/projects");
 
 // Call controllers for projects
-router.get("/", projectsController.getAllProjects);
+router.get("/", auth, projectsController.getAllProjects);
 
-router.get("/:id", projectsController.getProjectById);
+router.get("/:id", auth, projectsController.getProjectById);
 
-router.post("/new", projectsController.postProject);
+router.post("/new", auth, projectsController.postProject);
 
-// ! [auth] for editing and deleting projects?
+router.put("/edit/:id", auth, projectsController.putProject);
 
-router.put("/edit/:id", projectsController.putProject);
-
-router.delete("/edit/:id", projectsController.deleteProject);
+router.delete("/edit/:id", auth, projectsController.deleteProject);
 
 module.exports = router;
