@@ -73,13 +73,27 @@ module.exports = {
         return next(ApiError.conflict("This project already exists"));
       }
 
+      if (!req.body.title) {
+        debugError("Project requires a title to create");
+        return next(
+          ApiError.badRequest("A title is required to create a project"),
+        );
+      }
+
+      if (!req.body.status) {
+        debugError("Project requires a status to create");
+        return next(
+          ApiError.badRequest("A status is required to create a project"),
+        );
+      }
+
       const project = await Project.create({
+        userId: req.user.id,
         title: req.body.title,
         description: req.body.description,
         siteUrl: req.body.siteUrl,
         githubUrl: req.body.githubUrl,
         status: req.body.status,
-        userId: req.user.id,
       });
 
       res.send({
@@ -109,6 +123,31 @@ module.exports = {
       if (!project) {
         debugError("Project was not found");
         return next(ApiError.notFound("Project was not found"));
+      }
+
+      if (!req.body.title) {
+        debugError("Project requires a title to edit");
+        return next(
+          ApiError.badRequest("A title is required to edit a project"),
+        );
+      }
+
+      if (!req.body.status) {
+        debugError("Project requires a status to edit");
+        return next(
+          ApiError.badRequest("A status is required to edit a project"),
+        );
+      }
+
+      // if an existing project already has the new title...
+      if (req.body.title !== project.title) {
+        const sameProject = await Project.findOne({
+          where: { title: req.body.title },
+        });
+
+        if (sameProject) {
+          throw conflict("A project with the same title already exists");
+        }
       }
 
       await project.update({

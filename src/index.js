@@ -1,6 +1,7 @@
 // Imports
 require("dotenv").config();
 const express = require("express");
+const helmet = require("helmet");
 
 // api handler
 const ApiError = require("./utils/ApiError");
@@ -31,6 +32,7 @@ authSyncDb();
 // app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 
 debugStartup("Middleware enabled");
 

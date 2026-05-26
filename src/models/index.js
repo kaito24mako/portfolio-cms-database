@@ -7,7 +7,7 @@ User.hasMany(Project, {
   // connects User's 'projectId' to Project's 'id'
   foreignKey: "userId",
 
-  // if the project instance is deleted, user's 'projectId' becomes null
+  // if the project instance is deleted, user's 'projectId' is deleted also
   onDelete: "CASCADE",
 
   // if the 'projectId' changes, update user's 'projectId'
