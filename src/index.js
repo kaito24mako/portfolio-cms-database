@@ -1,7 +1,9 @@
-// Imports
+// Modules
 require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
+const cors = require("cors");
+const corsOptions = require("./middleware/corsOptions");
 
 // api handler
 const ApiError = require("./utils/ApiError");
@@ -21,6 +23,13 @@ const logger = require("./middleware/logger");
 // Create Express app instance
 const app = express();
 
+// Helmet - to protect routes from Headers
+app.use(helmet());
+
+// Cors
+app.use(cors(corsOptions));
+// app.options("/(*path)", cors(corsOptions));
+
 // load .env
 process.loadEnvFile();
 
@@ -32,9 +41,8 @@ authSyncDb();
 // app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
 
-debugStartup("Middleware enabled");
+debugStartup("All middleware enabled");
 
 // Routes
 app.use("/users", users);
