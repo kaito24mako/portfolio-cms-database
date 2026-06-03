@@ -47,7 +47,7 @@ class ApiError {
     return new ApiError(422, `Upload failed: ${msg}`);
   }
 
-  //* [500] Internal Server Error - our custom message to the client + the error stack from DB.
+  //* [500] Internal Server Error - our custom message to the client + the error stack from DB
   static internal(msg, err) {
     debugError500(err);
     return new ApiError(500, `Internal Server Error: ${msg}`);

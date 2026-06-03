@@ -68,15 +68,13 @@ const User = sequelize.define("User", {
 });
 
 // creates a web token and attaches user details to it
+// dont expose password
 User.prototype.generateAuthToken = function () {
   return jwt.sign(
     {
       id: this.id,
-      firstName: this.firstName,
-      lastName: this.lastName,
       username: this.username,
       email: this.email,
-      password: this.password,
       isAdmin: this.isAdmin,
     },
     process.env.API_PRIVATE_KEY,
