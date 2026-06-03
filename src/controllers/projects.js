@@ -55,7 +55,7 @@ module.exports = {
       debugWrite("Success getting project by ID");
     } catch (error) {
       return next(
-        ApiError.internal("Could not get the Project...try again later", error),
+        ApiError.internal("Could not get the project...try again later", error),
       );
     }
   },

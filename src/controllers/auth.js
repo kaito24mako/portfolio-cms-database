@@ -21,7 +21,7 @@ async function login(req, res, next) {
       );
     }
 
-    const user = await User.findOne({
+    let user = await User.findOne({
       where: {
         username: req.body?.username,
         email: req.body?.email,
@@ -33,32 +33,23 @@ async function login(req, res, next) {
       return next(ApiError.badRequest("Invalid login details"));
     }
 
-    if (req.body.password !== user.password) {
+    // compares the password in the request vs the user's password data
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password,
+    );
+
+    if (!validPassword) {
       debugError("Invalid password");
       return next(ApiError.badRequest("Invalid login details"));
     }
 
-    //? compares the password in the request vs the user's password data
-    // const validPassword = await bcrypt.compare(
-    //   req.body.password,
-    //   user.password,
-    // );
-
-    // if (!validPassword) {
-    //   debugError("Invalid password");
-    //   return next(ApiError.badRequest("Invalid login details"));
-    // }
-
-    // if (user.password !== req.body.password) {
-    //   debugError("Invalid login details");
-    //   return next(ApiError.badRequest("Invalid login details"));
-    // }
-
     // assign token with details of user
     const token = user.generateAuthToken();
 
-    // ? use lodash to exclude password and isAdmin...but how?
-    let loginData = _.omit(user, ["password", "isAdmin"]);
+    // // ? use lodash to exclude password and isAdmin...but how?
+    // let loginData = _.omit(user, ["password", "isAdmin"]);
+    // console.log(loginData);
 
     res.send(token);
     debugWrite("Successful login");

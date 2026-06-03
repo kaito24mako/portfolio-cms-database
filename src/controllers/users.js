@@ -5,7 +5,6 @@ const debugWrite = require("debug")("app:projectsLog:Write");
 const debugRead = require("debug")("app:projectsLog:Read");
 
 const ApiError = require("../utils/ApiError");
-
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
@@ -79,7 +78,7 @@ module.exports = {
         return next(ApiError.badRequest("Password is required"));
       }
 
-      // Authentication - to salt and hash (encrypt) the password
+      // salt and hash (encrypt) the password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
@@ -97,15 +96,13 @@ module.exports = {
         );
       }
 
-      const user = await User.create(req.body);
-
-      // const user = await User.create({
-      //   firstName: req.body.firstName,
-      //   lastName: req.body.lastName,
-      //   username: req.body.username,
-      //   email: req.body.email,
-      //   password: req.body.password,
-      // });
+      const user = await User.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+      });
 
       // Authentication
       const token = user.generateAuthToken();

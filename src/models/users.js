@@ -54,10 +54,6 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      len: {
-        args: [6, 30],
-        msg: "Password must be between 6 and 30 characters",
-      },
       isAscii: true,
       // is: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E])[\x20-\x7E]+$/,
     },

@@ -39,15 +39,25 @@ const Project = sequelize.define("Project", {
   updatedAt: {
     type: DataTypes.DATE,
     get() {
-      const rawValue = this.getDataValue("updatedAt");
-      if (!rawValue) return null;
-      const date = new Date(rawValue);
+      const date = this.getDataValue("updatedAt");
+      if (!date) return null;
 
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
+      const day = date.getDate();
+
+      const month = date.toLocaleString("en-AU", {
+        month: "long",
       });
+
+      const time = date
+        .toLocaleTimeString("en-AU", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(" ", "")
+        .toLowerCase();
+
+      return `${month} ${day}, ${time}`;
     },
   },
 });
