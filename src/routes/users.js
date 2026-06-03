@@ -6,9 +6,9 @@ const admin = require("../middleware/admin");
 const usersController = require("../controllers/users");
 
 // Call controllers for users
-router.get("/", usersController.getAllUsers);
+router.get("/", [auth, admin], usersController.getAllUsers);
 
-router.get("/:id", usersController.getUserById);
+router.get("/:id", [auth, admin], usersController.getUserById);
 
 router.post("/", usersController.postUser);
 

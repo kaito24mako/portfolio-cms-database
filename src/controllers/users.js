@@ -41,7 +41,7 @@ module.exports = {
 
       if (!user) {
         debugError("User not found by ID");
-        return next(ApiError.notFound("User not found by ID"));
+        return next(ApiError.notFound("This user cannot be found"));
       }
 
       debugRead("User found by ID");
@@ -82,12 +82,16 @@ module.exports = {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-      // ? how to make it username OR email
-      const sameUser = await User.findOne({
-        where: { username: req.body.username, email: req.body.email },
+      // an existing user has the same username or email
+      const sameUsername = await User.findOne({
+        where: { username: req.body.username },
       });
 
-      if (sameUser) {
+      const sameEmail = await User.findOne({
+        where: { email: req.body.email },
+      });
+
+      if (sameUsername || sameEmail) {
         debugError("A user with the same username or email already exists");
         return next(
           ApiError.conflict(
@@ -139,8 +143,8 @@ module.exports = {
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-        debugError("A user with the same username or email already exists");
-        return next(ApiError.conflict("This user already exists"));
+        debugError("This user ID does not exist");
+        return next(ApiError.conflict("This user cannot be found"));
       }
 
       await user.update({
@@ -148,6 +152,8 @@ module.exports = {
         lastName: req.body.lastName ?? user.lastName,
         username: req.body.username ?? user.username,
         email: req.body.email ?? user.email,
+        password: req.body.password ?? user.password,
+        isAdmin: req.body.isAdmin ?? user.isAdmin,
       });
 
       res.send({
@@ -169,8 +175,8 @@ module.exports = {
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-        debugError("User was not found");
-        return next(ApiError.notFound("User was not found"));
+        debugError("This user ID was not found");
+        return next(ApiError.notFound("Thi user cannot be found"));
       }
 
       await user.destroy();

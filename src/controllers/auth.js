@@ -47,10 +47,6 @@ async function login(req, res, next) {
     // assign token with details of user
     const token = user.generateAuthToken();
 
-    // // ? use lodash to exclude password and isAdmin...but how?
-    // let loginData = _.omit(user, ["password", "isAdmin"]);
-    // console.log(loginData);
-
     res.send(token);
     debugWrite("Successful login");
   } catch (error) {

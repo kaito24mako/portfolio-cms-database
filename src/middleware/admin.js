@@ -8,7 +8,7 @@ function admin(req, res, next) {
   //! So if we manually change a user to isAdmin, we need a new token.
   if (!req.user.isAdmin) {
     debugError("Access denied - User is not an admin");
-    return next(ApiError.denyAccess("Access denied - User is not an admin"));
+    return next(ApiError.denyAccess("User is not an admin"));
   }
 
   debugRead("Access granted - User is an admin");
